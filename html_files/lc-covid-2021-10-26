@@ -1,0 +1,1026 @@
+<!DOCTYPE html>
+<html lang="en" style="height: auto;background-color:rgb(244, 246, 249);">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <!-- Tell the browser to be responsive to screen width -->
+    <meta name="viewport" content="width=device-width,initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>District Totals - COVID-19 Incident Reporting</title>
+    
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="/lib/font-awesome/css/all.css">
+    <!-- Bootstrap -->
+    <link rel="stylesheet" href="/lib/twitter-bootstrap/css/bootstrap.css">
+    <!-- overlayScrollbars -->
+    <link rel="stylesheet" href="/lib/overlayscrollbars/css/OverlayScrollbars.css">
+    <!-- JQuery -->
+    <script type="text/javascript" src="/lib/jquery/jquery.js"></script>
+    <!-- Kendo UI ASP.net Core-->
+    <link rel="stylesheet" href="/lib/kendo-ui/styles/kendo.bootstrap-v4.min.css" />
+    <script src="/lib/kendo-ui/js/kendo.all.min.js"></script>
+    <script src="/lib/kendo-ui/js/kendo.aspnetmvc.min.js"></script>
+    <!-- Admin LTE -->
+    <link rel="stylesheet" href="/lib/admin-lte/css/adminlte.css" />
+    <!-- Theme style -->
+    <link rel="stylesheet" href="/css/site.css?rnd=1346067304">
+    <!-- Google Sans Pro Font -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" />
+    <!-- Perfect Scrollbar -->
+    <link rel="stylesheet" href="/lib/jquery.perfect-scrollbar/css/perfect-scrollbar.min.css" />
+    <!-- Sweet Alert 2 -->
+    <link rel="stylesheet" href="/lib/limonte-sweetalert2/sweetalert2.css" />
+
+
+    
+    <link rel="stylesheet" href="/css/inboxLayout.min.css?rnd=1481098089" />
+</head>
+    <style type="text/css">
+    #header-fixed {
+        position: fixed;
+        top: 0px;
+        display: none;
+        background-color: white;
+        z-index: 9999;
+    }
+
+    .showline {
+        border-right: 2px solid black !important;
+        box-shadow: rgba(0, 0, 0, 0.15) 0px 0px 2px;
+    }
+
+    table {
+        border: 0 !important;
+    }
+
+    tr:nth-child(even) th[scope=row] {
+        background-color: #f2f2f2;
+    }
+
+    tr:nth-child(odd) th[scope=row] {
+        background-color: #fff;
+    }
+
+    tr:nth-child(even) {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    tr:nth-child(odd) {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    thead > tr:nth-child(1) > th {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 4 !important;
+        background: #6c757d linear-gradient( 180deg, #828a91, #6c757d) repeat-x !important;
+        border: 1px solid #dee2e6;
+    }
+
+    thead > tr:nth-child(2) > th {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 72px;
+        z-index: 4 !important;
+        background: #6c757d linear-gradient( 180deg, #828a91, #6c757d) repeat-x !important;
+        border: 1px solid #dee2e6;
+    }
+
+    .secondHeader {
+        top: 72px !important;
+    }
+
+    thead > tr:nth-child(2) > th:nth-child(1) {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 5 !important;
+    }
+
+    @media only screen and (min-device-width: 980px) {
+        thead > tr:nth-child(2) > th {
+            top: 50px;
+            background: #6c757d linear-gradient( 180deg, #828a91, #6c757d) repeat-x !important;
+            z-index: 99999 !important;
+        }
+
+        #chart2 {
+            display: none !important;
+        }
+    }
+
+    @media only screen and (max-device-width: 979px) {
+    #chart {
+        display: none !important;
+    }
+        }
+
+    /* th:nth-child(1) {
+        position: -webkit-sticky;
+        position: sticky;
+        top: 0;
+        z-index: 3;
+        background: #6c757d linear-gradient( 180deg, #828a91, #6c757d) repeat-x !important;
+        border: 1px solid #dee2e6;
+    }*/
+
+    th[scope=row] {
+        position: -webkit-sticky;
+        position: sticky;
+        left: 0;
+        z-index: 1;
+    }
+
+        th[scope=row]:first-child {
+            min-width: 40%;
+            position: -webkit-sticky;
+            position: sticky;
+            left: 0;
+            z-index: 1;
+        }
+
+
+    th[scope=row] {
+        vertical-align: top;
+        color: inherit;
+        background-color: inherit;
+        z-index: 3;
+        min-width: 40%;
+    }
+
+    th:not([scope=row]):first-child {
+        left: 0;
+        z-index: 3;
+        background: #6c757d linear-gradient( 180deg, #828a91, #6c757d) repeat-x !important;
+    }
+
+    .chart-wrapper {
+        background-color:white !important;
+        width: 100%;
+    }
+</style>
+
+<h2 style="font-size: 1.625em; color:#043673;font-weight:bold">
+    Infection Rates by Date
+</h2>
+<div class="chart-wrapper" style="margin-bottom:30px;">
+    <div id="chart" name="chart" style="margin:0 auto;border:none; width: 100%;"></div><script>kendo.syncReady(function(){jQuery("#chart").kendoChart({"categoryAxis":[{"labels":{"rotation":{"angle":90}},"line":{"visible":false},"majorGridLines":{"visible":false}}],"chartArea":{"background":"transparent"},"legend":{"position":"top"},"series":[{"categoryField":"run_date_string","color":"#043673","field":"count","labels":{"background":"transparent","visible":false},"name":"Number of Infections","type":"column"}],"tooltip":{"format":"{0}%","template":"#= series.name #: #= value #","visible":true},"valueAxis":[{"majorGridLines":{"visible":false},"type":"numeric","visible":true}],"dataSource":{"schema":{"model":{"fields":{"run_date":{"type":"date"},"count":{"type":"number"},"run_date_string":{"editable":false,"type":"object"}}}},"data":[{"run_date":"2021-08-11T00:00:00-04:00","count":78,"run_date_string":"8/11"},{"run_date":"2021-08-12T00:00:00-04:00","count":153,"run_date_string":"8/12"},{"run_date":"2021-08-16T00:00:00-04:00","count":228,"run_date_string":"8/16"},{"run_date":"2021-08-17T00:00:00-04:00","count":102,"run_date_string":"8/17"},{"run_date":"2021-08-18T00:00:00-04:00","count":106,"run_date_string":"8/18"},{"run_date":"2021-08-19T00:00:00-04:00","count":106,"run_date_string":"8/19"},{"run_date":"2021-08-20T00:00:00-04:00","count":287,"run_date_string":"8/20"},{"run_date":"2021-08-22T00:00:00-04:00","count":224,"run_date_string":"8/22"},{"run_date":"2021-08-23T00:00:00-04:00","count":46,"run_date_string":"8/23"},{"run_date":"2021-08-24T00:00:00-04:00","count":248,"run_date_string":"8/24"},{"run_date":"2021-08-25T00:00:00-04:00","count":67,"run_date_string":"8/25"},{"run_date":"2021-08-26T00:00:00-04:00","count":272,"run_date_string":"8/26"},{"run_date":"2021-08-27T00:00:00-04:00","count":94,"run_date_string":"8/27"},{"run_date":"2021-08-29T00:00:00-04:00","count":341,"run_date_string":"8/29"},{"run_date":"2021-08-30T00:00:00-04:00","count":200,"run_date_string":"8/30"},{"run_date":"2021-08-31T00:00:00-04:00","count":248,"run_date_string":"8/31"},{"run_date":"2021-09-01T00:00:00-04:00","count":199,"run_date_string":"9/1"},{"run_date":"2021-09-02T00:00:00-04:00","count":241,"run_date_string":"9/2"},{"run_date":"2021-09-03T00:00:00-04:00","count":58,"run_date_string":"9/3"},{"run_date":"2021-09-06T00:00:00-04:00","count":353,"run_date_string":"9/6"},{"run_date":"2021-09-07T00:00:00-04:00","count":231,"run_date_string":"9/7"},{"run_date":"2021-09-08T00:00:00-04:00","count":113,"run_date_string":"9/8"},{"run_date":"2021-09-09T00:00:00-04:00","count":236,"run_date_string":"9/9"},{"run_date":"2021-09-10T00:00:00-04:00","count":107,"run_date_string":"9/10"},{"run_date":"2021-09-12T00:00:00-04:00","count":197,"run_date_string":"9/12"},{"run_date":"2021-09-13T00:00:00-04:00","count":123,"run_date_string":"9/13"},{"run_date":"2021-09-14T00:00:00-04:00","count":76,"run_date_string":"9/14"},{"run_date":"2021-09-15T00:00:00-04:00","count":170,"run_date_string":"9/15"},{"run_date":"2021-09-16T00:00:00-04:00","count":59,"run_date_string":"9/16"},{"run_date":"2021-09-18T00:00:00-04:00","count":95,"run_date_string":"9/18"},{"run_date":"2021-09-19T00:00:00-04:00","count":144,"run_date_string":"9/19"},{"run_date":"2021-09-20T00:00:00-04:00","count":29,"run_date_string":"9/20"},{"run_date":"2021-09-21T00:00:00-04:00","count":91,"run_date_string":"9/21"},{"run_date":"2021-09-22T00:00:00-04:00","count":40,"run_date_string":"9/22"},{"run_date":"2021-09-23T00:00:00-04:00","count":16,"run_date_string":"9/23"},{"run_date":"2021-09-24T00:00:00-04:00","count":69,"run_date_string":"9/24"},{"run_date":"2021-09-27T00:00:00-04:00","count":63,"run_date_string":"9/27"},{"run_date":"2021-09-28T00:00:00-04:00","count":43,"run_date_string":"9/28"},{"run_date":"2021-09-29T00:00:00-04:00","count":88,"run_date_string":"9/29"},{"run_date":"2021-09-30T00:00:00-04:00","count":22,"run_date_string":"9/30"},{"run_date":"2021-10-01T00:00:00-04:00","count":29,"run_date_string":"10/1"},{"run_date":"2021-10-03T00:00:00-04:00","count":36,"run_date_string":"10/3"},{"run_date":"2021-10-04T00:00:00-04:00","count":8,"run_date_string":"10/4"},{"run_date":"2021-10-06T00:00:00-04:00","count":45,"run_date_string":"10/6"},{"run_date":"2021-10-07T00:00:00-04:00","count":30,"run_date_string":"10/7"},{"run_date":"2021-10-08T00:00:00-04:00","count":8,"run_date_string":"10/8"},{"run_date":"2021-10-10T00:00:00-04:00","count":23,"run_date_string":"10/10"},{"run_date":"2021-10-11T00:00:00-04:00","count":12,"run_date_string":"10/11"},{"run_date":"2021-10-12T00:00:00-04:00","count":12,"run_date_string":"10/12"},{"run_date":"2021-10-13T00:00:00-04:00","count":17,"run_date_string":"10/13"},{"run_date":"2021-10-15T00:00:00-04:00","count":22,"run_date_string":"10/15"},{"run_date":"2021-10-17T00:00:00-04:00","count":16,"run_date_string":"10/17"},{"run_date":"2021-10-18T00:00:00-04:00","count":7,"run_date_string":"10/18"},{"run_date":"2021-10-19T00:00:00-04:00","count":5,"run_date_string":"10/19"},{"run_date":"2021-10-20T00:00:00-04:00","count":12,"run_date_string":"10/20"},{"run_date":"2021-10-21T00:00:00-04:00","count":11,"run_date_string":"10/21"},{"run_date":"2021-10-22T00:00:00-04:00","count":13,"run_date_string":"10/22"},{"run_date":"2021-10-24T00:00:00-04:00","count":12,"run_date_string":"10/24"},{"run_date":"2021-10-25T00:00:00-04:00","count":10,"run_date_string":"10/25"},{"run_date":"2021-10-26T00:00:00-04:00","count":2,"run_date_string":"10/26"}]}});});</script>
+    <div id="chart2" name="chart2" style="margin:0 auto;border:none; width: 98%;height:2000px"></div><script>kendo.syncReady(function(){jQuery("#chart2").kendoChart({"categoryAxis":[{"line":{"visible":false},"majorGridLines":{"visible":false}}],"chartArea":{"background":"transparent"},"legend":{"position":"top"},"series":[{"categoryField":"run_date_string","color":"#043673","field":"count","labels":{"background":"transparent","visible":true},"name":"Number of Infections","type":"bar"}],"tooltip":{"format":"{0}%","template":"#= series.name #: #= value #","visible":true},"valueAxis":[{"majorGridLines":{"visible":false},"type":"numeric","visible":true}],"dataSource":{"schema":{"model":{"fields":{"run_date":{"type":"date"},"count":{"type":"number"},"run_date_string":{"editable":false,"type":"object"}}}},"data":[{"run_date":"2021-08-11T00:00:00-04:00","count":78,"run_date_string":"8/11"},{"run_date":"2021-08-12T00:00:00-04:00","count":153,"run_date_string":"8/12"},{"run_date":"2021-08-16T00:00:00-04:00","count":228,"run_date_string":"8/16"},{"run_date":"2021-08-17T00:00:00-04:00","count":102,"run_date_string":"8/17"},{"run_date":"2021-08-18T00:00:00-04:00","count":106,"run_date_string":"8/18"},{"run_date":"2021-08-19T00:00:00-04:00","count":106,"run_date_string":"8/19"},{"run_date":"2021-08-20T00:00:00-04:00","count":287,"run_date_string":"8/20"},{"run_date":"2021-08-22T00:00:00-04:00","count":224,"run_date_string":"8/22"},{"run_date":"2021-08-23T00:00:00-04:00","count":46,"run_date_string":"8/23"},{"run_date":"2021-08-24T00:00:00-04:00","count":248,"run_date_string":"8/24"},{"run_date":"2021-08-25T00:00:00-04:00","count":67,"run_date_string":"8/25"},{"run_date":"2021-08-26T00:00:00-04:00","count":272,"run_date_string":"8/26"},{"run_date":"2021-08-27T00:00:00-04:00","count":94,"run_date_string":"8/27"},{"run_date":"2021-08-29T00:00:00-04:00","count":341,"run_date_string":"8/29"},{"run_date":"2021-08-30T00:00:00-04:00","count":200,"run_date_string":"8/30"},{"run_date":"2021-08-31T00:00:00-04:00","count":248,"run_date_string":"8/31"},{"run_date":"2021-09-01T00:00:00-04:00","count":199,"run_date_string":"9/1"},{"run_date":"2021-09-02T00:00:00-04:00","count":241,"run_date_string":"9/2"},{"run_date":"2021-09-03T00:00:00-04:00","count":58,"run_date_string":"9/3"},{"run_date":"2021-09-06T00:00:00-04:00","count":353,"run_date_string":"9/6"},{"run_date":"2021-09-07T00:00:00-04:00","count":231,"run_date_string":"9/7"},{"run_date":"2021-09-08T00:00:00-04:00","count":113,"run_date_string":"9/8"},{"run_date":"2021-09-09T00:00:00-04:00","count":236,"run_date_string":"9/9"},{"run_date":"2021-09-10T00:00:00-04:00","count":107,"run_date_string":"9/10"},{"run_date":"2021-09-12T00:00:00-04:00","count":197,"run_date_string":"9/12"},{"run_date":"2021-09-13T00:00:00-04:00","count":123,"run_date_string":"9/13"},{"run_date":"2021-09-14T00:00:00-04:00","count":76,"run_date_string":"9/14"},{"run_date":"2021-09-15T00:00:00-04:00","count":170,"run_date_string":"9/15"},{"run_date":"2021-09-16T00:00:00-04:00","count":59,"run_date_string":"9/16"},{"run_date":"2021-09-18T00:00:00-04:00","count":95,"run_date_string":"9/18"},{"run_date":"2021-09-19T00:00:00-04:00","count":144,"run_date_string":"9/19"},{"run_date":"2021-09-20T00:00:00-04:00","count":29,"run_date_string":"9/20"},{"run_date":"2021-09-21T00:00:00-04:00","count":91,"run_date_string":"9/21"},{"run_date":"2021-09-22T00:00:00-04:00","count":40,"run_date_string":"9/22"},{"run_date":"2021-09-23T00:00:00-04:00","count":16,"run_date_string":"9/23"},{"run_date":"2021-09-24T00:00:00-04:00","count":69,"run_date_string":"9/24"},{"run_date":"2021-09-27T00:00:00-04:00","count":63,"run_date_string":"9/27"},{"run_date":"2021-09-28T00:00:00-04:00","count":43,"run_date_string":"9/28"},{"run_date":"2021-09-29T00:00:00-04:00","count":88,"run_date_string":"9/29"},{"run_date":"2021-09-30T00:00:00-04:00","count":22,"run_date_string":"9/30"},{"run_date":"2021-10-01T00:00:00-04:00","count":29,"run_date_string":"10/1"},{"run_date":"2021-10-03T00:00:00-04:00","count":36,"run_date_string":"10/3"},{"run_date":"2021-10-04T00:00:00-04:00","count":8,"run_date_string":"10/4"},{"run_date":"2021-10-06T00:00:00-04:00","count":45,"run_date_string":"10/6"},{"run_date":"2021-10-07T00:00:00-04:00","count":30,"run_date_string":"10/7"},{"run_date":"2021-10-08T00:00:00-04:00","count":8,"run_date_string":"10/8"},{"run_date":"2021-10-10T00:00:00-04:00","count":23,"run_date_string":"10/10"},{"run_date":"2021-10-11T00:00:00-04:00","count":12,"run_date_string":"10/11"},{"run_date":"2021-10-12T00:00:00-04:00","count":12,"run_date_string":"10/12"},{"run_date":"2021-10-13T00:00:00-04:00","count":17,"run_date_string":"10/13"},{"run_date":"2021-10-15T00:00:00-04:00","count":22,"run_date_string":"10/15"},{"run_date":"2021-10-17T00:00:00-04:00","count":16,"run_date_string":"10/17"},{"run_date":"2021-10-18T00:00:00-04:00","count":7,"run_date_string":"10/18"},{"run_date":"2021-10-19T00:00:00-04:00","count":5,"run_date_string":"10/19"},{"run_date":"2021-10-20T00:00:00-04:00","count":12,"run_date_string":"10/20"},{"run_date":"2021-10-21T00:00:00-04:00","count":11,"run_date_string":"10/21"},{"run_date":"2021-10-22T00:00:00-04:00","count":13,"run_date_string":"10/22"},{"run_date":"2021-10-24T00:00:00-04:00","count":12,"run_date_string":"10/24"},{"run_date":"2021-10-25T00:00:00-04:00","count":10,"run_date_string":"10/25"},{"run_date":"2021-10-26T00:00:00-04:00","count":2,"run_date_string":"10/26"}]}});});</script>
+    </div>
+<h2 style="font-size: 1.625em; color:#043673;font-weight:bold">
+    Covid Case Numbers
+</h2>
+    <table class="table table-bordered" style="width:100%" id="table-1">
+        <thead style="background-color:grey !important">
+            <tr class="first">
+                <th colspan="4" style="left:auto !important;background: #fdc04b !important">COVID-19 Cases for October 26, 2021</th>
+                <th colspan="3" style="background: #043673 !important; color:white">Total COVID-19 Cases since August 10, 2021</th>
+            </tr>
+
+            <tr class="bg-gradient-gray second">
+                <th width="40%" class="secondHeader">School</th>
+                <th class="secondHeader">Total Cases</thclass="secondHeader">
+                <th class="secondHeader">Students</th>
+                <th class="secondHeader showline">Staff</th>
+                <th class="secondHeader">Total Cases</th>
+                <th class="secondHeader">Students</th>
+                <th class="secondHeader">Staff</th>
+            </tr>
+        </thead>
+        <tbody>
+                <tr>
+                    <th scope="row">Allen Park Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>59</td>
+                    <td>54</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <th scope="row">Bayshore Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>62</td>
+                    <td>51</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th scope="row">Bonita Springs Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>26</td>
+                    <td>17</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <th scope="row">Bonita Springs High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>112</td>
+                    <td>100</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Bonita Springs Middle Center for the Arts</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>39</td>
+                    <td>33</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Buckingham Exceptional Student Center</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>17</td>
+                    <td>7</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Caloosa Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>93</td>
+                    <td>74</td>
+                    <td>19</td>
+                </tr>
+                <tr>
+                    <th scope="row">Caloosa Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>97</td>
+                    <td>87</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cape Coral High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>181</td>
+                    <td>171</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cape Coral Technical College</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>21</td>
+                    <td>18</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cape Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>82</td>
+                    <td>72</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Challenger Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>104</td>
+                    <td>98</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Colonial Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>29</td>
+                    <td>21</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cypress Lake High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>104</td>
+                    <td>97</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Cypress Lake Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>41</td>
+                    <td>36</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <th scope="row">Diplomat Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>99</td>
+                    <td>91</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Diplomat Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>108</td>
+                    <td>107</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <th scope="row">Dr Carrie D Robinson Littleton</th>
+                    <td>1</td>
+                    <td>0</td>
+                    <td class="showline">1</td>
+                    <td>27</td>
+                    <td>23</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Dunbar Community</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>2</td>
+                    <td>2</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th scope="row">Dunbar High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>72</td>
+                    <td>60</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Early Childhood Learning Center</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>39</td>
+                    <td>28</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th scope="row">East Lee County High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>138</td>
+                    <td>129</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <th scope="row">Edgewood Academy</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>32</td>
+                    <td>24</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Edison Park Creative &amp; Expressive Arts School</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>44</td>
+                    <td>38</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Estero High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>147</td>
+                    <td>138</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <th scope="row">Fort Myers Beach Elementary School</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>6</td>
+                    <td>5</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <th scope="row">Fort Myers High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>134</td>
+                    <td>127</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Fort Myers Middle Academy</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>38</td>
+                    <td>36</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <th scope="row">Fort Myers Technical College</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>31</td>
+                    <td>31</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th scope="row">Franklin Park Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>15</td>
+                    <td>13</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <th scope="row">G Weaver Hipps Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>32</td>
+                    <td>27</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <th scope="row">Gateway Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>50</td>
+                    <td>46</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Gateway High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>90</td>
+                    <td>84</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Gulf Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>98</td>
+                    <td>90</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Gulf Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>118</td>
+                    <td>110</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Hancock Creek Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>77</td>
+                    <td>65</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Harns Marsh Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>96</td>
+                    <td>83</td>
+                    <td>13</td>
+                </tr>
+                <tr>
+                    <th scope="row">Harns Marsh Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>105</td>
+                    <td>93</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Hector A Cafferata Jr. Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>49</td>
+                    <td>45</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Heights Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>104</td>
+                    <td>87</td>
+                    <td>17</td>
+                </tr>
+                <tr>
+                    <th scope="row">Ida S Baker High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>231</td>
+                    <td>215</td>
+                    <td>16</td>
+                </tr>
+                <tr>
+                    <th scope="row">Island Coast High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>209</td>
+                    <td>195</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <th scope="row">J Colin English Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>26</td>
+                    <td>24</td>
+                    <td>2</td>
+                </tr>
+                <tr>
+                    <th scope="row">James Stephens International Academy</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>21</td>
+                    <td>13</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">LAMP</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>5</td>
+                    <td>5</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lehigh Acres Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>122</td>
+                    <td>100</td>
+                    <td>22</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lehigh Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>118</td>
+                    <td>102</td>
+                    <td>16</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lehigh Senior High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>179</td>
+                    <td>164</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <th scope="row">Lexington Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>61</td>
+                    <td>58</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <th scope="row">Manatee Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>25</td>
+                    <td>21</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mariner High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>133</td>
+                    <td>126</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mariner Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>73</td>
+                    <td>68</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <th scope="row">Mirror Lakes Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>84</td>
+                    <td>62</td>
+                    <td>22</td>
+                </tr>
+                <tr>
+                    <th scope="row">North Fort Myers Academy for the Arts</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>122</td>
+                    <td>113</td>
+                    <td>9</td>
+                </tr>
+                <tr>
+                    <th scope="row">North Fort Myers High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>195</td>
+                    <td>185</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Oak Hammock Middle</th>
+                    <td>1</td>
+                    <td>1</td>
+                    <td class="showline">0</td>
+                    <td>90</td>
+                    <td>76</td>
+                    <td>14</td>
+                </tr>
+                <tr>
+                    <th scope="row">Orange River Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>34</td>
+                    <td>19</td>
+                    <td>15</td>
+                </tr>
+                <tr>
+                    <th scope="row">Orangewood Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>29</td>
+                    <td>26</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <th scope="row">Patriot Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>64</td>
+                    <td>59</td>
+                    <td>5</td>
+                </tr>
+                <tr>
+                    <th scope="row">Paul Laurence Dunbar Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>64</td>
+                    <td>63</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <th scope="row">Pelican Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>112</td>
+                    <td>94</td>
+                    <td>18</td>
+                </tr>
+                <tr>
+                    <th scope="row">Pine Island Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>14</td>
+                    <td>14</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <th scope="row">Pinewoods Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>65</td>
+                    <td>55</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">Ray V Pottorf Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>20</td>
+                    <td>16</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Rayma C Page Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>77</td>
+                    <td>71</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">River Hall Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>91</td>
+                    <td>72</td>
+                    <td>19</td>
+                </tr>
+                <tr>
+                    <th scope="row">Riverdale High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>215</td>
+                    <td>198</td>
+                    <td>17</td>
+                </tr>
+                <tr>
+                    <th scope="row">Royal Palm Exc Ctr</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>19</td>
+                    <td>11</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">San Carlos Park Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>39</td>
+                    <td>33</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Skyline Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>90</td>
+                    <td>79</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th scope="row">South Fort Myers High</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>102</td>
+                    <td>94</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Spring Creek Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>27</td>
+                    <td>20</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Success Academy</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>10</td>
+                    <td>6</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Sunshine Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>60</td>
+                    <td>49</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tanglewood Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>41</td>
+                    <td>35</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">The Alva School</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>93</td>
+                    <td>83</td>
+                    <td>10</td>
+                </tr>
+                <tr>
+                    <th scope="row">The Sanibel School</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>14</td>
+                    <td>11</td>
+                    <td>3</td>
+                </tr>
+                <tr>
+                    <th scope="row">Three Oaks Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>61</td>
+                    <td>54</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Three Oaks Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>90</td>
+                    <td>84</td>
+                    <td>6</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tice Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>24</td>
+                    <td>16</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tortuga Preserve Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>104</td>
+                    <td>92</td>
+                    <td>12</td>
+                </tr>
+                <tr>
+                    <th scope="row">Trafalgar Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>70</td>
+                    <td>59</td>
+                    <td>11</td>
+                </tr>
+                <tr>
+                    <th scope="row">Trafalgar Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>131</td>
+                    <td>124</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Treeline Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>70</td>
+                    <td>63</td>
+                    <td>7</td>
+                </tr>
+                <tr>
+                    <th scope="row">Tropic Isles Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>63</td>
+                    <td>55</td>
+                    <td>8</td>
+                </tr>
+                <tr>
+                    <th scope="row">Varsity Lakes Middle</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>122</td>
+                    <td>118</td>
+                    <td>4</td>
+                </tr>
+                <tr>
+                    <th scope="row">Veterans Park Academy for the Arts</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>145</td>
+                    <td>129</td>
+                    <td>16</td>
+                </tr>
+                <tr>
+                    <th scope="row">Villas Elementary</th>
+                    <td>0</td>
+                    <td>0</td>
+                    <td class="showline">0</td>
+                    <td>56</td>
+                    <td>48</td>
+                    <td>8</td>
+                </tr>
+        </tbody>
+    </table>
+    <table class="table table-bordered" style="width:100%" id="header-fixed"></table>
+
+
+
+    
+
+    <!-- JQuery UI -->
+    <script type="text/javascript" src="/lib/jqueryui/jquery-ui.js"></script>
+
+    <!-- Resolve conflict in jQuery UI tooltip with Bootstrap tooltip -->
+    <script>
+            $.widget.bridge('uibutton', $.ui.button)
+    </script>
+
+    <!-- Popper JS -->
+    <!-- Bootstrap -->
+    <script type="text/javascript" src="/lib/twitter-bootstrap/js/bootstrap.bundle.js"></script>
+
+    <!-- Moment -->
+    <script type="text/javascript" src="/lib/moment.js/moment.js"></script>
+
+    <!-- Admin LTE -->
+    <script type="text/javascript" src="/lib/admin-lte/js/adminlte.js"></script>
+
+    <!-- JQuery Validate-->
+    <script type="text/javascript" src="/lib/jquery-validate/jquery.validate.js"></script>
+
+    <!-- JSZip -->
+    <script type="text/javascript" src="/lib/kendo-ui/js/jszip.min.js"></script>
+
+    <!-- Perfect Scrollbar -->
+    <script type="text/javascript" src="/lib/jquery.perfect-scrollbar/js/perfect-scrollbar.jquery.min.js"></script>
+
+    <!-- Sweet Alert 2 -->
+    <script type="text/javascript" src="/lib/limonte-sweetalert2/sweetalert2.all.js"></script>
+
+
+
+    
+
+    
+</html>
